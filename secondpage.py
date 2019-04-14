@@ -205,7 +205,7 @@ def deletedata():
         with sqlite3.connect('quit.db') as db:
             c = db.cursor()
         delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
-        c.execute(delete_contact,[(tefname),(telname)])
+        c.execute(delete_contact,[(tefname),(telname.strip())])
         db.commit()
 
         print("Committed to db")
@@ -401,6 +401,98 @@ def search():
     icon(f_search)
     search_fun()
 
+####delete
+def searchdatabynamedelcontact():
+        global tdfname,tdlname,tdcontact,tdemail,tdaddress,dlname,dfname
+        dfname,dlname = td.get("1.0",'end-1c').split(" ")
+        # print(te.get("1.0","end-1c"))
+        # print(dfname+" \n "+dlname)
+        dfname = dfname.strip()
+        dlname = dlname.strip()
+        # print(dfname+"\n"+dlname)
+        try:
+            with sqlite3.connect('quit.db') as db:
+                c = db.cursor()      
+            find_contact = ('SELECT Fname,Lname,Contact,Email,Address FROM contacts WHERE Fname = ? and Lname = ?')
+            c.execute(find_contact,[(dfname),(dlname)])  
+            rawdatas = c.fetchall()
+            if rawdatas:
+                for p1 in rawdatas:
+                    # print(raw[0])
+                    tdfname = p1[0]
+                    tdlname = p1[1]
+                    tdcontact = p1[2]
+                    tdemail = p1[3]
+                    tdaddress = p1[4]
+                    td_n.insert(tk.END,tdfname)
+                    td_l.insert(tk.END,tdlname)
+                    td_c.insert(tk.END,tdcontact)
+                    td_e.insert(tk.END,tdemail)
+                    td_a.insert(tk.END,tdaddress) 
+                    
+
+            else:
+                ms.showerror('Error!','Not Found ')
+        except Exception as e:
+            print(e)
+
+def deletedatadelcontact():
+    try:
+        # print(dfname+"\n"+dlname.strip())
+        with sqlite3.connect('quit.db') as db:
+            c = db.cursor()
+        delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
+        c.execute(delete_contact,[(dfname),(dlname.strip())])
+        db.commit()
+
+
+        print("Committed to db")
+    except Exception as e:
+        print("ERROR !!!")
+        print(e)   
+
+#frame code
+def delete_fun():
+    global f2,td,td_n,td_e,td_l,td_c,td_a
+    f2 = tk.Frame()
+    f2=mk_frame(f_delete,f2,540,500,'light sky blue',0,0)
+    b1 = tk.Button(f2,text='Delete',bg='sky blue',width=10,font=("Courier"),command = deletedatadelcontact)
+    b1.place(x=150,y=460)
+    b2 = tk.Button(f2,text='Next',bg='sky blue',width=10,font=("Courier"),command = searchdatabynamedelcontact)
+    b2.place(x=150,y=110)
+    l=tk.Label()
+    l=mk_label(f2,l,'Saved name','sky blue',10,50,10)
+    l1=tk.Label()
+    l1=mk_label(f2,l1,'First Name','sky blue',10,160,10)
+    l2=tk.Label()
+    l2=mk_label(f2,l2,'Last Name','sky blue',10,220,10)
+    l3=tk.Label()
+    l3=mk_label(f2,l3,'Contact','sky blue',10,280,10)
+    l4=tk.Label()
+    l4=mk_label(f2,l4,'Email','sky blue',10,340,10)
+    l5=tk.Label()
+    l5=mk_label(f2,l5,'Address','sky blue',10,400,10)
+    td=tk.Text()
+    td=mk_txt(f2,td,'white',130,50,20)
+    td_n=tk.Text()
+    td_n=mk_txt(f2,td_n,'white',130,160,20)
+    td_l=tk.Text()
+    td_l=mk_txt(f2,td_l,'white',130,220,20)
+    td_c=tk.Text()
+    td_c=mk_txt(f2,td_c,'white',130,280,20)
+    td_e=tk.Text()
+    td_e=mk_txt(f2,td_e,'white',130,340,20)
+    td_a=tk.Text()
+    td_a=mk_txt(f2,td_a,'white',130,400,20)
+#click
+def delete():
+    global f_delete
+    f_delete = tk.Frame(w,height=540,width=600,background='light sky blue')
+    f_delete.pack_propagate(0) # don't shrink
+    f_delete.place(x=0, y=0)
+    icon(f_delete)
+    delete_fun()
+
 
 
 #### home screen
@@ -447,7 +539,7 @@ def home():
     b4.config(font=("Courier", 14))
     b4.place(x=360,y=0)
     #### block button
-    b5 = tk.Button(f_b,bg = 'sky blue',fg = 'black', text='Block\nContact', width=10,height=2)
+    b5 = tk.Button(f_b,bg = 'sky blue',fg = 'black', text='Delete\nContact', width=10,height=2,command = delete)
     b5.config(font=("Courier", 14))
     b5.place(x=480,y=0)
 
