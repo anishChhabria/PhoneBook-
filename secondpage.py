@@ -47,18 +47,14 @@ def view_fun():
         c.execute('Select Fname,Lname,Contact FROM contacts')
         db.commit()
         rows = c.fetchall() 
-        # print(c.fetchall())
     except Exception as e :
         print(e)
 
-    
-    
-
     f_v= tk.Frame()
-    f_v = mk_frame(w,f_v,200,500,'light sky blue',0,10)
+    f_v = mk_frame(w,f_v,500,600,'light sky blue',0,5)
 
-    listNodes = tk.Listbox(f_v,width = 56, font=("Helvetica", 12))#
-    listNodes.place(x = 0,y = 0)
+    listNodes = tk.Listbox(f_v,width = 66, font=("Helvetica", 12),bg = "sky blue")#
+    listNodes.grid()
 
     scrollbar = tk.Scrollbar(f_v, orient="vertical")
     scrollbar.config(command=listNodes.yview)
@@ -69,19 +65,21 @@ def view_fun():
     for x in rows:
         lvfname = str(x[0][0:])
         lvlname = str(x[1][0:])
-        # lvcname = str(x[2])
         string = lvfname+"      "+lvlname   
-        # mlb.insert('end',*map(unicode,row))
         listNodes.insert(tk.END,string )
-        # print(x[3])
+
 #click
 def view():
     global f_view,b_v
     f_view = tk.Frame(w,height=540,width=600,background='light sky blue')
     f_view.pack_propagate(0) # don't shrink
     f_view.place(x=0, y=0)
-    #back
-    icon(f_view)
+    # icon(f_view)
+    l_img = tk.Label(f_view,height=300,width=600, image = img3,bg= 'light sky blue')
+    l_img.place(x= 0,y=200)
+    # l_tem = tk.Label(f_view,height = 2,width=600,text='hellofawfawfawgawgdrhrdhrdhsegsegsefrqwafafasgh',bg = 'blue',fg='red')
+    # l_tem.pack_propagate(0)
+    # l_tem.place(x=0,y=200)
     view_fun()
 
 
@@ -89,6 +87,7 @@ def view():
 #add in DB
 def add_db():
     # a --> add
+    global l,c
     Id = 0
     aFname = ta_n.get('1.0','2.0')
     aLname = ta_l.get('1.0','2.0')
@@ -104,6 +103,15 @@ def add_db():
         insert = 'INSERT INTO contacts(Fname,Lname,Contact,Email,Address) VALUES(?,?,?,?,?)'
         c.execute(insert,[(aFname),(aLname),(aContact),(aEmail),(aAddress)])
         db.commit()
+        c1 = tk.Canvas(f1,bg = "light sky blue",width = 200,height = 200)
+        c1.place(x = 390,y = 150)
+        c1.create_oval(10,10,190,190,outline = "green",width = 10)
+        c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
+        c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
+        # l = tk.Label()
+        # l=mk_label(c,l,"Contact added","blue",0,200,100)
+        # tk.Label(c,text="Contact added",bg = 'blue',width=100,height=100,font=("",12)).place(x=0,y=200)
+
         print("Committed to db")
 
     except Exception as e:
@@ -115,9 +123,10 @@ def add_db():
 def add_fun():
     global f1,ta_a,ta_c,ta_e,ta_l,ta_n
     f1 = tk.Frame()
-    f1=mk_frame(f_add,f1,540,500,'light sky blue',0,0)#
+    f1=mk_frame(f_add,f1,540,600,'light sky blue',0,0)#
     b1_add = tk.Button(f1,text='Add',bg='sky blue',width=10,font=("Courier"),command = add_db)
     b1_add.place(x=150,y=390)
+    icon(f1)
     l1=tk.Label()
     l1=mk_label(f1,l1,'First Name','sky blue',10,50,10)
     l2=tk.Label()
@@ -141,7 +150,7 @@ def add_fun():
 #click
 def add():
     global f_add,b_a
-    f_add = tk.Frame(w,height=540,width=500,background='light sky blue')
+    f_add = tk.Frame(w,height=540,width=600,background='light sky blue')
     f_add.pack_propagate(0) # don't shrink
     f_add.place(x=0, y=0)
     #back
@@ -149,12 +158,30 @@ def add():
     add_fun()
 
 
-#### edit
+#### edit        
+def saveEditedData(): 
+    try:
+        with sqlite3.connect('quit.db') as db:
+            c = db.cursor()
+        #update into database
+        insert = 'UPDATE contacts SET Fname=?, Lname=?, Contact=?, Email=?, Address=? WHERE Fname = ? and Lname = ?'
+        c.execute(insert,[(te_n.get('1.0','2.0')),(te_l.get('1.0','2.0')),(te_c.get('1.0','2.0')),(te_e.get('1.0','2.0')),(te_a.get('1.0','2.0')),(efname),(elname)])
+        
+        db.commit()
+        # deletedata()
+        c1 = tk.Canvas(f2,bg = "light sky blue",width = 200,height = 200)
+        c1.place(x = 390,y = 150)
+        c1.create_oval(10,10,190,190,outline = "green",width = 10)
+        c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
+        c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
+        print("Commited to DB")
+    except Exception as e:
+        print("ERROR !!!")
+        print(e)  
+
 def fetchdata():
-        global tefname,telname,tecontact,teemail,teaddress
+        global tefname,telname,tecontact,teemail,teaddress,efname,elname
         efname,elname = te.get("1.0",'end-1c').split(" ") 
-        # print(te.get("1.0","end-1c"))
-        # print(efname+" \n "+elname)
         efname = efname.strip()
         elname = elname.strip()
         try:
@@ -176,52 +203,38 @@ def fetchdata():
                     te_c.insert(tk.END,tecontact)
                     te_e.insert(tk.END,teemail)
                     te_a.insert(tk.END,teaddress)
+
                     
 
             else:
                 ms.showerror('Error!','Not Found ')
         except Exception as e:
             print(e)
+ 
 
-        
-def saveEditedData(): 
-    try:
-        with sqlite3.connect('quit.db') as db:
-            c = db.cursor()
-        #instert into database
-        insert = 'INSERT INTO contacts(Fname,Lname,Contact,Email,Address) VALUES(?,?,?,?,?)'
-        c.execute(insert,[(te_n.get('1.0','2.0')),(te_l.get('1.0','2.0')),(te_c.get('1.0','2.0')),(te_e.get('1.0','2.0')),(te_a.get('1.0','2.0'))])
-        
-        db.commit()
+# def deletedata():
+#     try:
+#         with sqlite3.connect('quit.db') as db:
+#             c = db.cursor()
+#         delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
+#         c.execute(delete_contact,[(tefname),(telname.strip())])
+#         db.commit()
 
-        print("Committed to db")
-        deletedata()
-    except Exception as e:
-        print("ERROR !!!")
-        print(e)   
-
-def deletedata():
-    try:
-        with sqlite3.connect('quit.db') as db:
-            c = db.cursor()
-        delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
-        c.execute(delete_contact,[(tefname),(telname.strip())])
-        db.commit()
-
-        print("Committed to db")
-    except Exception as e:
-        print("ERROR !!!")
-        print(e)   
+#         print("Committed to db")
+#     except Exception as e:
+#         print("ERROR !!!")
+#         print(e)   
 
 #frame code
 def edit_fun():
     global f2,te,te_n,te_l,te_a,te_c,te_e
     f2 = tk.Frame()
-    f2=mk_frame(f_edit,f2,540,500,'light sky blue',0,0)
+    f2=mk_frame(f_edit,f2,540,600,'light sky blue',0,0)
     b1 = tk.Button(f2,text='Save',bg='sky blue',width=10,font=("Courier"),command = saveEditedData)
     b1.place(x=150,y=460)
     b2 = tk.Button(f2,text='edit',bg='sky blue',width=10,font=("Courier"),command = fetchdata)
     b2.place(x=150,y=110)
+    icon(f2)
     l=tk.Label()
     l=mk_label(f2,l,'Saved name','sky blue',10,50,10)
     l1=tk.Label()
@@ -327,7 +340,7 @@ def searchdatabyphonenumber():
 def search_data():
     global f_data,ts_n,ts_l,ts_c,ts_e,ts_a
     f_data = tk.Frame()
-    f_data=mk_frame(f_search,f_data,420,500,'light sky blue',100,110)
+    f_data=mk_frame(f_search,f_data,420,600,'light sky blue',100,110)
     l1=tk.Label()
     l1=mk_label(f_data,l1,'First Name','sky blue',10,70,10)
     l2=tk.Label()
@@ -382,6 +395,8 @@ def srch():
         s_name()
     if var == 2:
         s_number()
+
+
 # frame code
 def search_fun():
     global var_s
@@ -395,7 +410,7 @@ def search_fun():
 #click   
 def search():
     global f_search,b_s,var_s
-    f_search= tk.Frame(w,height=540,width=500,background='light sky blue')
+    f_search= tk.Frame(w,height=540,width=600,background='light sky blue')
     f_search.pack_propagate(0) # don't shrink
     f_search.place(x=0, y=0)
     icon(f_search)
@@ -444,7 +459,11 @@ def deletedatadelcontact():
         delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
         c.execute(delete_contact,[(dfname),(dlname.strip())])
         db.commit()
-
+        c1 = tk.Canvas(f2,bg = "light sky blue",width = 200,height = 200)
+        c1.place(x = 390,y = 150)
+        c1.create_oval(10,10,190,190,outline = "green",width = 10)
+        c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
+        c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
 
         print("Committed to db")
     except Exception as e:
@@ -455,11 +474,12 @@ def deletedatadelcontact():
 def delete_fun():
     global f2,td,td_n,td_e,td_l,td_c,td_a
     f2 = tk.Frame()
-    f2=mk_frame(f_delete,f2,540,500,'light sky blue',0,0)
+    f2=mk_frame(f_delete,f2,540,600,'light sky blue',0,0)
     b1 = tk.Button(f2,text='Delete',bg='sky blue',width=10,font=("Courier"),command = deletedatadelcontact)
     b1.place(x=150,y=460)
     b2 = tk.Button(f2,text='Next',bg='sky blue',width=10,font=("Courier"),command = searchdatabynamedelcontact)
     b2.place(x=150,y=110)
+    icon(f2)
     l=tk.Label()
     l=mk_label(f2,l,'Saved name','sky blue',10,50,10)
     l1=tk.Label()
@@ -504,9 +524,9 @@ def home():
     canvas.pack_propagate()
     canvas.place(x=90,y=100)
     canvas_text = canvas.create_text(10, 10, text='', anchor=tk.NW)
-    test_string = "FUNCTIONALITY\n\n* You can add new contact\n* You can view existing contacts\n* You can edit existing contacts\n* Search for contact\n* Block contact\n* Get user details of any contact"
+    test_string = "FUNCTIONALITY\n\n* You can add new contact\n* You can view existing contacts\n* You can edit existing contacts\n* Search for contact\n* Delete contact\n* Get user details of any contact\n* Authorized users only\n* Data is safe and secured"
     #Time delay between chars, in milliseconds
-    delta = 10
+    delta = 50
     delay = 0
     for i in range(len(test_string) + 1):
         s = test_string[:i]
@@ -545,12 +565,20 @@ def home():
 
 def main():
     ####window
-    global w,img2
+    global w,img2,img3
     w = tk.Tk()
     w.geometry('600x600')
     w.title('KnowTheDialer') 
     w.configure(bg='light sky blue')
+    menubar = tk.Menu(w)
+    filemenu = tk.Menu(menubar, tearoff=0)
+    filemenu.add_command(label="New")
+    filemenu.add_separator()
+    filemenu.add_command(label="Exit", command=w.quit)
+    menubar.add_cascade(label="Options", menu=filemenu)
     img2 = ImageTk.PhotoImage(file = r".\\p3.gif")
+    img3 = ImageTk.PhotoImage(file = r".\\p5.gif")#C:\Users\anshu\Desktop\Python\
+    w.config(menu = menubar)
     home()
     w.mainloop()
 

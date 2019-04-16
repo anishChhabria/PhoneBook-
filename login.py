@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox as ms
 import sqlite3
+from PIL import Image,ImageTk
 
 try:
     with sqlite3.connect('quit.db') as db:
@@ -83,10 +84,15 @@ class main:
       
   
    def widgets(self):
+       Label(self.master, image=img2,background='light sky blue').place(x=0,y=240)
+       f1 = Frame(self.master,height=100,width=100,background='light sky blue')
+       f1.pack_propagate(0) # don't shrink
+       f1.place(x=500, y=0)
+       Label(f1, image=img1, bg='light sky blue').pack(fill=BOTH, expand=1)
        self.head = Label(self.master,text = 'LOGIN',font = ('',35),pady = 10,bg='light sky blue')
        self.head.pack()
        self.logf = Frame(self.master,padx =10,pady = 10,bg='light sky blue')
-       Label(self.logf,text = 'Username: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
+       Label(self.logf,text = 'Mobile No.: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
        Entry(self.logf,textvariable = self.username,bd = 5,font = ('',15),).grid(row=0,column=1)
        Label(self.logf,text = 'Password: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
        Entry(self.logf,textvariable = self.password,bd = 5,font = ('',15),show = '*').grid(row=1,column=1)
@@ -95,7 +101,7 @@ class main:
        self.logf.pack()
       
        self.crf = Frame(self.master,padx =10,pady = 10,bg='light sky blue')
-       Label(self.crf,text = 'Username: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
+       Label(self.crf,text = 'Moblie No.: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
        Entry(self.crf,textvariable = self.n_username,bd = 5,font = ('',15)).grid(row=0,column=1)
        Label(self.crf,text = 'Password: ',font = ('',20),pady=5,padx=5,bg='light sky blue').grid(sticky = W)
        Entry(self.crf,textvariable = self.n_password,bd = 5,font = ('',15),show = '*').grid(row=1,column=1)
@@ -108,6 +114,10 @@ class main:
 root = Tk()
 root.title("Login Form")
 root.geometry('600x600')
+img2 = ImageTk.PhotoImage(file = r".\\p7.gif")
+img1 = ImageTk.PhotoImage(file = r".\\p3.gif")
 main(root)
+
+
 root.configure(bg='light sky blue')
 root.mainloop()
