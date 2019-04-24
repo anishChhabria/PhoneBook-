@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image,ImageTk
 import sqlite3
 from tkinter import messagebox as ms
+import smtplib
 # from TkTreectrl import *
 
 with sqlite3.connect('quit.db') as db:
@@ -76,10 +77,10 @@ def view():
     f_view.place(x=0, y=0)
     # icon(f_view)
     l_img = tk.Label(f_view,height=300,width=600, image = img3,bg= 'light sky blue')
-    l_img.place(x= 0,y=200)
-    # l_tem = tk.Label(f_view,height = 2,width=600,text='hellofawfawfawgawgdrhrdhrdhsegsegsefrqwafafasgh',bg = 'blue',fg='red')
+    l_img.place(x= 0,y=240)
+    l_tem = tk.Label(f_view,height = 2,width=55,text='"We provide the contacts.\nYou make the connection"',bg = 'light sky blue',font=("",14))
     # l_tem.pack_propagate(0)
-    # l_tem.place(x=0,y=200)
+    l_tem.place(x=0,y=200)
     view_fun()
 
 
@@ -87,7 +88,7 @@ def view():
 #add in DB
 def add_db():
     # a --> add
-    global l,c
+    global l,c,f
     Id = 0
     aFname = ta_n.get('1.0','2.0')
     aLname = ta_l.get('1.0','2.0')
@@ -108,9 +109,11 @@ def add_db():
         c1.create_oval(10,10,190,190,outline = "green",width = 10)
         c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
         c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
-        # l = tk.Label()
-        # l=mk_label(c,l,"Contact added","blue",0,200,100)
-        # tk.Label(c,text="Contact added",bg = 'blue',width=100,height=100,font=("",12)).place(x=0,y=200)
+        f = tk.Frame()
+        f = mk_frame(f1,f,50,200,"light sky blue",390,360)
+        l = tk.Label()
+        l=mk_label(f,l,"Contact added","light sky blue",0,0,20)
+        # tk.Label(f,text="Contact added",bg = 'blue',width=100,height=100,font=("",12)).place(x=0,y=200)
 
         print("Committed to db")
 
@@ -160,6 +163,7 @@ def add():
 
 #### edit        
 def saveEditedData(): 
+    global f
     try:
         with sqlite3.connect('quit.db') as db:
             c = db.cursor()
@@ -167,14 +171,18 @@ def saveEditedData():
         insert = 'UPDATE contacts SET Fname=?, Lname=?, Contact=?, Email=?, Address=? WHERE Fname = ? and Lname = ?'
         c.execute(insert,[(te_n.get('1.0','2.0')),(te_l.get('1.0','2.0')),(te_c.get('1.0','2.0')),(te_e.get('1.0','2.0')),(te_a.get('1.0','2.0')),(efname),(elname)])
         
+        
         db.commit()
-        # deletedata()
+        deletedata()
         c1 = tk.Canvas(f2,bg = "light sky blue",width = 200,height = 200)
         c1.place(x = 390,y = 150)
         c1.create_oval(10,10,190,190,outline = "green",width = 10)
         c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
         c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
-        print("Commited to DB")
+        f = tk.Frame()
+        f = mk_frame(f2,f,50,200,"light sky blue",390,360)
+        l = tk.Label()
+        l=mk_label(f,l,"Contact Edited","light sky blue",0,0,20)
     except Exception as e:
         print("ERROR !!!")
         print(e)  
@@ -203,7 +211,6 @@ def fetchdata():
                     te_c.insert(tk.END,tecontact)
                     te_e.insert(tk.END,teemail)
                     te_a.insert(tk.END,teaddress)
-
                     
 
             else:
@@ -212,18 +219,18 @@ def fetchdata():
             print(e)
  
 
-# def deletedata():
-#     try:
-#         with sqlite3.connect('quit.db') as db:
-#             c = db.cursor()
-#         delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
-#         c.execute(delete_contact,[(tefname),(telname.strip())])
-#         db.commit()
+def deletedata():
+    try:
+        with sqlite3.connect('quit.db') as db:
+            c = db.cursor()
+        delete_contact = ('DELETE FROM contacts WHERE Fname = ? and Lname = ?')
+        c.execute(delete_contact,[(tefname),(telname.strip())])
+        db.commit()
 
-#         print("Committed to db")
-#     except Exception as e:
-#         print("ERROR !!!")
-#         print(e)   
+        print("Committed to db")
+    except Exception as e:
+        print("ERROR !!!")
+        print(e)   
 
 #frame code
 def edit_fun():
@@ -395,8 +402,6 @@ def srch():
         s_name()
     if var == 2:
         s_number()
-
-
 # frame code
 def search_fun():
     global var_s
@@ -452,6 +457,7 @@ def searchdatabynamedelcontact():
             print(e)
 
 def deletedatadelcontact():
+    global f
     try:
         # print(dfname+"\n"+dlname.strip())
         with sqlite3.connect('quit.db') as db:
@@ -464,6 +470,10 @@ def deletedatadelcontact():
         c1.create_oval(10,10,190,190,outline = "green",width = 10)
         c1.after(500,lambda : c1.create_line(40,120,80,150,width = 10,fill = "green"))
         c1.after(1000,lambda : c1.create_line(80,150,150,50,width = 10,fill = "green"))
+        f = tk.Frame()
+        f = mk_frame(f2,f,50,200,"light sky blue",390,360)
+        l = tk.Label()
+        l=mk_label(f,l,"Contact Deleted","light sky blue",0,0,20)
 
         print("Committed to db")
     except Exception as e:
@@ -563,6 +573,39 @@ def home():
     b5.config(font=("Courier", 14))
     b5.place(x=480,y=0)
 
+def send():
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login("fbghmm288@gmail.com", "mygoal288")
+    message1 = "Thank you for your feedback."
+    message2 = tsugg_t.get("1.0","2.0")
+    email1 = tsugg_e.get("1.0","2.0")
+    s.sendmail("fbghmm288@gmail.com", email1, message1)
+    s.sendmail("fbghmm288@gmail.com", "2017.anshul.chaudhary@ves.ac.in", message2)
+    w1.destroy()
+
+
+def sugg():
+    global tsugg_e,tsugg_t,w1
+    w1 = tk.Tk()
+    w1.geometry('500x500')
+    w1.config(bg = "light sky blue")
+    l1=tk.Label()
+    l1 = mk_label(w1,l1,"Email :","sky blue",10,10,10)
+    tsugg_e=tk.Text()
+    tsugg_e = mk_txt(w1,tsugg_e,"white",100,10,30)
+    l2=tk.Label()
+    l2 = mk_label(w1,l1,"Suggestion :","sky blue",10,60,15)
+    tsugg_t=tk.Text()
+    tsugg_t = mk_txt(w1,tsugg_t,"white",10,130,47)
+    tsugg_t.config(height = 15)
+    b4 = tk.Button(w1,bg = 'sky blue',fg = 'black', text='send', width=10,height=2,command = send)
+    b4.config(font=("Courier", 14))
+    b4.place(x=200,y=430)
+
+
+    w1.mainloop()
+
 def main():
     ####window
     global w,img2,img3
@@ -571,17 +614,16 @@ def main():
     w.title('KnowTheDialer') 
     w.configure(bg='light sky blue')
     menubar = tk.Menu(w)
-    filemenu = tk.Menu(menubar, tearoff=0)
-    filemenu.add_command(label="New")
-    filemenu.add_separator()
+    filemenu = tk.Menu(menubar, tearoff=0,bg = "sky blue")
+    filemenu.add_command(label="Suggest",command = sugg)
     filemenu.add_command(label="Exit", command=w.quit)
     menubar.add_cascade(label="Options", menu=filemenu)
     img2 = ImageTk.PhotoImage(file = r".\\p3.gif")
-    img3 = ImageTk.PhotoImage(file = r".\\p5.gif")#C:\Users\anshu\Desktop\Python\
-    w.config(menu = menubar)
+    img3 = ImageTk.PhotoImage(file = r".\\p5.gif")
+    w.config(menu=menubar)
     home()
+   
     w.mainloop()
-
 
 
 main()
